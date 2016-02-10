@@ -71,6 +71,11 @@
   ignore_errors: True
   tags: base
 
+- name: selinux file
+  template: src=config dest=/etc/selinux/config
+  ignore_errors: True
+  tags: base
+
 - name: configure kernel file
   template: src=sysctl.conf dest=/etc/sysctl.conf
   ignore_errors: True
@@ -93,6 +98,21 @@
 
 - name: configure hardclock
   command: /sbin/hwclock --systohc
+  ignore_errors: True
+  tags: base
+
+- name: chage IO scheduler from cfq to deadline for improving read latency
+  shell: echo deadline > /sys/block/sda/queue/scheduler
+  ignore_errors: True
+  tags: base
+
+- name: disable Transparent Huge Pages
+  shell: echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled && echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
+  ignore_errors: True
+  tags: base
+
+- name: disable disk access time
+  command: /bin/sed -i 's/ext4    defaults        1 2/ext4    defaults,noatime        0 0/g' /etc/fstab
   ignore_errors: True
   tags: base
 

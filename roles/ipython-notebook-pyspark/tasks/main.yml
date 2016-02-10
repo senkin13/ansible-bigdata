@@ -1,20 +1,14 @@
 ---
 - name: ipython profile create pyspark
   command: "ipython profile create pyspark"
-  sudo: yes
-  sudo_user: dsl
   tags: ipython-notebook-pyspark
 
 - name: copy ipython_notebook_config.py
   template: src=ipython_notebook_config.py dest=~/.ipython/profile_pyspark/ipython_notebook_config.py
-  sudo: yes
-  sudo_user: dsl
   tags: ipython-notebook-pyspark
 
 - name: copy 00-pyspark-setup.py
   template: src=00-pyspark-setup.py dest=~/.ipython/profile_pyspark/startup/00-pyspark-setup.py
-  sudo: yes
-  sudo_user: dsl
   tags: ipython-notebook-pyspark
 
 - name: make directories for jupyterd
