@@ -1,0 +1,6 @@
+default linux
+prompt 0
+timeout 1
+label linux
+kernel vmlinuz
+append ksdevice=em1 ks=http://localhost/host.cfg load initrd=initrd.img noipv6

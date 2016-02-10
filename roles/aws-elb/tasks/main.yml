@@ -1,0 +1,8 @@
+---
+- name: add instance to elb
+  ec2_elb:
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    instance_id: "{{ instance1}}"
+    state: present
+    region: "{{ region }}"

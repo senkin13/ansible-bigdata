@@ -1,0 +1,12 @@
+---
+- name: yum install python setuptools
+  yum: name={{ item }} state=latest
+  with_items:
+    - python-setuptools
+  tags: ipython
+
+- name: pip install ipython
+  pip: name={{ item }} state=latest
+  with_items:
+    - ipython
+  tags: ipython

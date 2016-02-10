@@ -1,0 +1,12 @@
+---
+- name: yum install http server
+  yum: name={{ item }} state=latest
+  with_items:
+    - httpd
+  tags: httpd
+
+- name: start http service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - httpd
+  tags: httpd

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# chkconfig: - 85 15
+# description: fluentd
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+case "$1" in
+'start')
+        $0 stop
+        fluentd -c /etc/fluent/fluent.conf -o /var/log/fluentd.log -d /var/run/fluentd.pid -vv >/dev/null 2>&1
+        ;;
+'stop')
+        kill -9 `ps aux | grep fluent.conf | egrep -v 'grep' | awk '{print $2}'` >/dev/null 2>&1
+        ;;
+
+'restart')
+        $0 stop
+        sleep 3
+        $0 start
+        ;;
+*)
+        echo "Usage: $0 {start|stop|restart}"
+        ;;
+esac
+exit 0

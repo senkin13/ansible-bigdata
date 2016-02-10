@@ -1,0 +1,11 @@
+---
+# file: roles/sbt/tasks/main.yml
+- name: get sbt resource
+  get_url: url=https://bintray.com/sbt/rpm/rpm dest=/etc/yum.repos.d/bintray-sbt-rpm.repo
+  tags: sbt
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - sbt
+  tags: sbt

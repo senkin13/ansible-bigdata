@@ -1,0 +1,24 @@
+---
+# file: roles/elasticsearch/tasks/main.yml
+
+- name: get elasticsearch repo
+  template: src=elasticsearch.repo dest=/etc/yum.repos.d/
+  tags: elasticsearch
+
+- name: yum install elasticsearch
+  yum: name={{ item }} state=latest
+  with_items:
+    - elasticsearch
+  tags: elasticsearch
+
+- name: chkconfig add elasticsearch
+  command: chkconfig --add elasticsearch
+  tags: elasticsearch
+
+- name: setting up elasticsearch.yml
+  template: src=elasticsearch.yml dest=/etc/elasticsearch/elasticsearch.yml
+  tags: elasticsearch
+
+- name: setting up elasticsearch.in.sh
+  template: src=elasticsearch.in.sh dest=/usr/share/elasticsearch/bin/elasticsearch.in.sh
+  tags: elasticsearch

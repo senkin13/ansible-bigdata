@@ -1,0 +1,16 @@
+---
+# file: roles/tcollector/tasks/main.yml
+
+- name: get tcollector source
+  shell:
+    git clone https://github.com/OpenTSDB/tcollector.git
+    chdir=/opt
+  tags: tcollector
+
+- name: config setup
+  template: src=startstop dest=/opt/tcollector/startstop
+  tags: tcollector
+
+- name: start tcollector
+  shell: /opt/tcollector/startstop start
+  tags: tcollector

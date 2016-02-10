@@ -1,0 +1,86 @@
+---
+# file: roles/python2.7/tasks/main.yml
+
+- name: get python2.7.9 resource
+  get_url: url=https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz dest=/usr/local/src/
+  tags: python2.7
+
+- name: decompress
+  command: tar -zxvf /usr/local/src/Python-2.7.9.tgz -C /usr/local/src/
+  tags: python2.7
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+#    - readline-devel
+#    - sqlite-devel
+#    - ncurses-devel
+#    - tk-devel
+#    - bzip2-devel
+#    - gcc-c++
+#    - zeromq
+#    - zeromq-devel
+     - openssl-devel
+     - zlib-devel
+  tags: python2.7
+
+- name: compile python
+  shell:
+    ./configure --with-threads --enable-shared --prefix=/usr/local && make
+    chdir=/usr/local/src/Python-2.7.9
+  tags: python2.7
+
+- name: configure ssl setup
+  template: src=Setup dest=/usr/local/src/Python-2.7.9/Modules/Setup
+  tags: python2.7 
+
+- name : make altinstall
+  shell:
+    make altinstall
+    chdir=/usr/local/src/Python-2.7.9
+  tags: python2.7
+
+- name: sympolink python2.7 module
+  shell:
+    ln -fs /usr/local/lib/libpython2.7.so.1.0 /lib64/ && ln -fs /usr/local/lib/libpython2.7.so /usr/lib && ln -fs /usr/local/lib/libpython2.7.so.1.0 /usr/lib && ln -fs /usr/local/bin/python2.7 /usr/local/bin/python && ln -fs /usr/local/include/python2.7 /usr/include/python2.7 && /sbin/ldconfig -v
+  tags: python2.7
+
+- name: get python setuptool
+  get_url: url=https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py dest=/usr/local/src/
+  tags: python2.7
+
+- name: install setuptool
+  shell:
+    python ez_setup.py && easy_install-2.7 pip && mv /usr/bin/pip /usr/bin/pip26 && ln -s /usr/local/bin/pip /usr/bin/pip
+    chdir=/usr/local/src/
+  tags: python2.7
+
+- name: pip install packages
+  pip: name={{ item }} state=latest
+  with_items:
+    - pyreadline
+    - pysqlite
+    - readline
+    - terminado
+    - awscli
+    - boto
+    - argparse
+    - jinja2
+    - Babel
+    - distribute
+    - httplib2
+    - iniparse
+    - ordereddict
+    - paramiko
+    - pycurl
+    - python-keyczar
+    - PyYAML
+    - simplejson
+    - pyzmq
+    - tornado
+    - jsonschema 
+    - ipython
+    - pandas
+    - ua_parser
+  tags: [ "python2.7", "pip-lib" ]
+  ignore_errors: True

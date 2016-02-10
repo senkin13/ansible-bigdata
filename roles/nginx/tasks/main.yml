@@ -1,0 +1,39 @@
+---
+- name: add nginx yum repository
+  copy: src=nginx.repo
+        dest=/etc/yum.repos.d/nginx.repo
+        owner=root group=root mode=0644
+  tags: nginx
+
+- name: yum install nginx
+  yum: name={{ item }} state=present
+  with_items:
+    - nginx
+  tags: nginx
+
+- name: start nginx service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - nginx
+  tags: nginx
+
+- name: upload ssl_certificate file
+  copy: src={{ server_name }}.crt dest=/etc/nginx/{{ server_name }}.crt mode=0644
+  when: ssl_on
+  tags: nginx
+
+- name: upload ssl_certificate_key file
+  copy: src={{ server_name }}.key dest=/etc/nginx/{{ server_name }}.key mode=0644
+  when: ssl_on
+  tags: nginx
+
+- name: copy nginx configuration
+  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf
+  notify: restart nginx
+  tags: nginx
+
+- name: copy nginx default configuration for optg.link 
+  template: src=default.conf.j2 dest=/etc/nginx/conf.d/default.conf
+  notify: restart nginx
+  tags: nginx
+

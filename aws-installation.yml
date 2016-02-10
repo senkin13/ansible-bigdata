@@ -1,0 +1,29 @@
+---
+- hosts: all
+  connection: local
+  gather_facts: false  
+  roles:
+     - aws-base
+     - aws-vpc
+     - aws-route53
+     - aws-ec2
+     - aws-elb
+     - aws-elb-lb
+    
+
+- hosts: clouderamanager
+  connection: local
+  gather_facts: false
+  roles:
+     - clouderamanager
+     - mysql
+     - mysql-connector
+
+- hosts: spark
+  connection: local
+  gather_facts: false
+  roles:
+     - spark-1.4.1
+     - tachyon-0.6.4
+
+

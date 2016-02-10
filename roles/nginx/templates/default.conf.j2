@@ -1,0 +1,66 @@
+log_format ltsv '$remote_addr\t'
+                '$time_iso8601\t'
+                '$upstream_http_x_user_gid\t'
+                '$arg_sid\t'
+                '$arg_uid\t'
+                '$request\t'
+                '$status\t'
+                '$http_referer\t'
+                '$http_user_agent\t'
+                '$request_time\t';
+
+upstream optgidapps {
+{% for server in upstream_servers %}
+  server {{ server }};
+{% endfor %}
+}
+
+server {
+  {% if ssl_on | default(false) %}
+    listen       443 ssl;
+    server_name  {{ server_name }};
+
+    ssl  on;
+    ssl_certificate      /etc/nginx/{{ server_name }}.crt;
+    ssl_certificate_key  /etc/nginx/{{ server_name }}.key;
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  5m;
+    ssl_ciphers  HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers  on;
+  {% else %}
+    listen       80 default_server;
+    server_name  {{ server_name }};
+  {% endif %}
+
+    proxy_hide_header X-User-GID;
+
+    access_log  /var/log/nginx/optg.access.log ltsv;
+    error_log   /var/log/nginx/optg.error.log;
+
+    rewrite ^(.*[^/])$ $1/ permanent;
+    rewrite_log off;
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+
+    location ~ ^/(i|r)/ {
+      proxy_redirect                      off;
+      proxy_headers_hash_bucket_size      128;
+      proxy_set_header Host               $host;
+      proxy_set_header X-Forwarded-Proto  $scheme;
+      proxy_set_header X-Real-IP          $remote_addr;
+      proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+      proxy_pass http://optgidapps;
+      proxy_connect_timeout 10;
+      proxy_read_timeout 10;
+      proxy_send_timeout 10;
+    }
+
+    location / {
+      access_log off;
+      log_not_found off;
+    }
+
+}
+

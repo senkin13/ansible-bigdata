@@ -1,0 +1,76 @@
+---
+- name: Create the security group
+  ec2_group:
+    name: "{{ group }}"
+    description: "{{ sg }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    vpc_id: "{{ vpc_id }}"
+    region: "{{ region }}"
+    rules:
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: /32
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: /32
+      - proto: tcp
+        from_port: 443
+        to_port: 443
+        cidr_ip: /32
+      - proto: all
+        cidr_ip: /24
+    rules_egress:
+      - proto: all
+        cidr_ip: 0.0.0.0/0
+    state: present
+  tags: aws-ec2 
+
+- name: Create ec2 instance
+  ec2:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    key_name: "{{ ec2_keypair_name }}"
+    assign_public_ip: "{{ assign_public_ip }}"
+    group: "{{ group }}"
+    image: "{{ image }}"
+    instance_type: "{{ instance_type }}"
+    instance_tags:
+      Name: "{{ nametag }}"
+    private_ip: "{{ private_ip }}"
+    region: "{{ region }}"
+    volumes:
+      - device_name: "{{ device_name_root }}"
+        device_type: "{{ device_type_root }}"
+        volume_size: "{{ volume_size_root }}"
+        delete_on_termination: "{{ delete_on_termination }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    state: present
+    wait: yes
+  register: ec2
+  tags: aws-ec2
+
+- name: Add ec2 ebs volume
+  ec2_vol:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    device_name: "{{ device_name_data0 }}"
+    volume_size: "{{ volume_size_data0 }}"
+    volume_type: "{{ volume_type_data0 }}"
+    instance: "{{ item.id }}"
+    region: "{{ region }}"
+    state: present
+  with_items: ec2.instances
+  tags: aws-ec2
+
+- name: associate new elastic IPs with each of the instances
+  ec2_eip:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    instance_id: "{{ item.id }}"
+    region: "{{ region }}"
+    state: present
+  with_items: ec2.instances
+  tags: aws-ec2

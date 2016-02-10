@@ -1,0 +1,10 @@
+---
+# file: roles/grafana/tasks/main.yml
+
+- name: get grafana source
+  get_url: url=https://grafanarel.s3.amazonaws.com/builds/grafana-2.0.2-1.x86_64.rpm dest=/usr/local/src/grafana-2.0.2-1.x86_64.rpm
+  tags: grafana
+
+- name: install rpm
+  command: rpm -ivh /usr/local/src/grafana-2.0.2-1.x86_64.rpm
+  tags: grafana

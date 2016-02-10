@@ -1,0 +1,34 @@
+---
+# file: roles/spark-1.4.1/tasks/main.yml
+
+- name: wget spark standalone
+  copy: src=/usr/local/src/spark-1.4.1-bin-hadoop2.6.tgz dest=/opt/spark-1.4.1-bin-hadoop2.6.tgz
+  tags: spark-1.4.1
+
+- name: decompression tgz file
+  command: tar -zxvf /opt/spark-1.4.1-bin-hadoop2.6.tgz -C /opt/
+  tags: spark-1.4.1
+
+- name: slaves file
+  template: src=slaves dest=/opt/spark-1.4.1-bin-hadoop2.6/conf/slaves
+  tags: spark-1.4.1
+
+- name: spark-env.sh file
+  template: src=spark-env.sh dest=/opt/spark-1.4.1-bin-hadoop2.6/conf/spark-env.sh
+  tags: spark-1.4.1
+
+- name: spark-defaults.conf file
+  template: src=spark-defaults.conf dest=/opt/spark-1.4.1-bin-hadoop2.6/conf/spark-defaults.conf
+  tags: spark-1.4.1
+
+- name: spark folder symbolink
+  command: ln -s /opt/spark-1.4.1-bin-hadoop2.6 /opt/spark
+  tags: spark-1.4.1
+
+- name: chown root
+  command: chown -R root:root /opt/spark-1.4.1-bin-hadoop2.6
+  tags: spark-1.4.1
+
+- name: delete spark tgz
+  command: rm -f /opt/spark-1.4.1-bin-hadoop2.6.tgz
+  tags: spark-1.4.1

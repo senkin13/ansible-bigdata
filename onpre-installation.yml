@@ -1,0 +1,27 @@
+---
+- hosts: all
+  remote_user: root
+  roles:
+     - kickstart
+     - dhcp
+     - http
+     - base
+     - jdk
+     - zabbix-agent
+     - mysql-connector
+     - tcollector
+
+- hosts: clouderamanager
+  remote_user: root
+  roles:
+     - clouderamanager
+     - mysql
+     - mysql-connector
+
+- hosts: spark
+  remote_user: root
+  roles:
+     - spark-1.4.1
+     - tachyon-0.6.4
+
+

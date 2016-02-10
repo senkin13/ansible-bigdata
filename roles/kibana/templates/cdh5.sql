@@ -1,0 +1,10 @@
+create database amon;
+grant all on amon.* TO 'amon'@'%' IDENTIFIED BY 'ojxb9bn3';
+create database rmon;
+grant all on rmon.* TO 'rmon'@'%' IDENTIFIED BY 'ojxb9bn3';
+create database metastore;
+grant all on metastore.* TO 'hive'@'%' IDENTIFIED BY 'ojxb9bn3';
+create database sentry;
+grant all on sentry.* TO 'sentry'@'%' IDENTIFIED BY 'ojxb9bn3';
+create database hue;
+grant all on hue.* TO 'hue'@'%' IDENTIFIED BY 'ojxb9bn3';

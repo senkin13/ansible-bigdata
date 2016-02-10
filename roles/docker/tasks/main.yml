@@ -1,0 +1,14 @@
+---
+# file: roles/docker/tasks/main.yml
+
+- name: yum install docker
+  yum: name={{ item }} state=latest
+  with_items:
+    - docker-io
+  tags: docker
+
+- name: start docker service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - docker
+  tags: docker

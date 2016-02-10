@@ -1,0 +1,16 @@
+---
+- name: yum install dhcp server
+  yum: name={{ item }} state=latest
+  with_items:
+    - dhcp
+  tags: dhcp
+
+- name: start dhcp service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - dhcp
+  tags: dhcp
+
+- name: configure dhcp.conf
+  template: src=dhcpd.conf dest=/etc/dhcp/dhcpd.conf
+  tags: dhcp

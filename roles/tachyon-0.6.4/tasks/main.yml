@@ -1,0 +1,18 @@
+---
+# file: roles/tachyon-0.6.4/tasks/main.yml
+
+- name: wget tachyon
+  get_url: url=https://github.com/amplab/tachyon/releases/download/v0.6.4/tachyon-0.6.4-bin.tar.gz dest=/opt/tachyon-0.6.4-bin.tar.gz
+  tags: tachyon-0.6.4
+
+- name: decompression tgz file
+  command: tar -zxvf /opt/tachyon-0.6.4-bin.tar.gz -C /opt/
+  tags: tachyon-0.6.4
+
+- name: worker file
+  template: src=workers dest=/opt/tachyon-0.6.4/conf/workers
+  tags: tachyon-0.6.4
+
+- name: tachyon-env.sh file
+  template: src=tachyon-env.sh dest=/opt/tachyon-0.6.4/conf/tachyon-env.sh
+  tags: tachyon-0.6.4

@@ -1,0 +1,17 @@
+---
+# file: roles/kibana/tasks/main.yml
+
+- name: get kibana resource
+  get_url: url=https://download.elasticsearch.org/kibana/kibana/kibana-4.0.0-beta3.tar.gz dest=/usr/local/src/
+  tags: kibana
+
+- name: decompress kibana
+  command: tar zxvf /usr/local/src/kibana-4.0.0-beta3.tar.gz -C /usr/local/src/
+  tags: kibana
+
+#- name: compile ruby
+#  shell:
+#    ./configure && make && make install
+#    chdir=/usr/local/src/ruby-2.0.0-p598
+#  tags: kibana
+

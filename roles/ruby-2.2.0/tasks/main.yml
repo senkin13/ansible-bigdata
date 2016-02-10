@@ -1,0 +1,25 @@
+---
+# file: roles/ruby/tasks/main.yml
+
+- name: get ruby2.2.0 resource
+  get_url: url=http://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.0.tar.gz dest=/usr/local/src/ruby-2.2.0.tar.gz
+  tags: ruby
+
+- name: decompress ruby
+  command: tar zxvf /usr/local/src/ruby-2.2.0.tar.gz -C /usr/local/src/
+  tags: ruby
+
+- name: yum install openssl-devel
+  yum: name={{ item }} state=latest
+  with_items:
+    - openssl-devel
+    - zlib-devel
+    - libffi-devel
+    - curl-devel
+  tags: ruby
+
+- name: compile ruby
+  shell:
+    ./configure --prefix=/usr && make && make install
+    chdir=/usr/local/src/ruby-2.2.0
+  tags: ruby

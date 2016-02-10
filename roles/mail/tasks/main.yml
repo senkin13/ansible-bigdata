@@ -1,0 +1,28 @@
+---
+# file: roles/main/tasks/main.yml
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - postfix
+    - dovecot
+  tags: mail
+
+- name: configure file
+  template: src=main.cf dest=/etc/postfix/main.cf
+  tags: mail
+
+- name: configure file
+  template: src=master.cf dest=/etc/postfix/master.cf
+  tags: mail
+
+- name: configure file
+  template: src=dovecot.conf dest=/etc/dovecot/dovecot.conf
+  tags: mail
+
+- name: start some service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - postfix
+    - dovecot
+  tags: mail

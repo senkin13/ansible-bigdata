@@ -1,0 +1,13 @@
+---
+- name: Add an A record with
+  route53:
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    command: create
+    overwrite: no
+    record: *.com 
+    retry_interval: 60
+    ttl: 3600
+    type: A
+    value: *.ap-northeast-1.elb.amazonaws.com
+    zone: *.com

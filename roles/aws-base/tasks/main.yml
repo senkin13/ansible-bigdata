@@ -1,0 +1,122 @@
+---
+# file: roles/aws-base/tasks/main.yml
+
+- name: install epel packages
+  command: rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  ignore_errors: True
+  tags: aws-base
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - "@base"
+    - "@core"
+    - "@japanese-support"
+    - "@network-tools"
+    - "@development"
+    - "@server-policy"
+    - "@workstation-policy"
+    - monit
+    - dstat
+    - net-snmp
+    - net-snmp-utils
+    - libselinux-python
+    - dracut-modules-growroot
+  ignore_errors: True
+  tags: aws-base
+
+- name: configure zone to tokyo
+  command: rsync -av /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+  tags: aws-base
+
+- name: configure i18n
+  template: src=i18n dest=/etc/sysconfig/i18n
+  tags: aws-base
+
+- name: configure sshd_config don't use dns when ssh login
+  template: src=sshd_config dest=/etc/ssh/sshd_config
+  tags: aws-base
+
+- name: configure ssh_config don't ask when ssh login
+  template: src=ssh_config dest=/etc/ssh/ssh_config
+  tags: aws-base
+
+- name: configure selinux disable
+  template: src=config dest=/etc/selinux/config
+  tags: aws-base
+
+- name: configure ipv6 disable
+  lineinfile: dest=/etc/sysconfig/network line="NETWORKING_IPV6=no"
+  tags: aws-base
+
+- name: configure ipv6 disable
+  command: sed -i 's/IPV6INIT="yes"/IPV6INIT="no"/g' /etc/sysconfig/network-scripts/ifcfg-eth0
+  tags: aws-base
+
+- name: configure limits of noproc and nofile
+  template: src=limits.conf dest=/etc/security/limits.conf
+  tags: aws-base
+
+- name: configure hosts file
+  template: src=hosts dest=/etc/hosts
+  tags: aws-base
+
+- name: configure kernel file
+  template: src=sysctl.conf dest=/etc/sysctl.conf
+  tags: aws-base
+
+- name: configure sudoers file
+  template: src=sudoers dest=/etc/sudoers
+  tags: aws-base
+
+- name: configure ntpdate
+  command: ntpdate 0.centos.pool.ntp.org
+  tags: aws-base
+  ignore_errors: True
+
+- name: configure hardclock
+  command: /sbin/hwclock --systohc
+  tags: aws-base
+  ignore_errors: True
+
+- name: stop some service
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+    - acpid
+    - atd
+    - auditd
+    - haldaemon 
+    - ip6tables
+    - iptables
+    - lvm2-monitor
+    - mdmonitor
+    - messagebus 
+    - psacct  
+    - rdisc
+    - saslauthd 
+    - smartd  
+  tags: aws-base
+  ignore_errors: True
+
+- name: start some service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - ntpd
+    - monit
+    - snmpd
+  ignore_errors: True
+  tags: aws-base
+
+- name: add swap
+  shell: dd if=/dev/zero of=/swapfile bs=1024 count=4194304 && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+  tags: aws-base
+
+- name: enable partition tables resize
+  command: dracut --force --add growroot /boot/initramfs-$(uname -r).img   
+  tags: aws-base
+  ignore_errors: True
+ 
+- name: yum update all
+  shell: /usr/bin/yum -y update && /usr/bin/yum -y clean all
+  tags: aws-base
+  ignore_errors: True

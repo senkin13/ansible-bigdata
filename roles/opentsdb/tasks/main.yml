@@ -1,0 +1,16 @@
+---
+# file: roles/opentsdb/tasks/main.yml
+
+- name: get opentsdb source
+  get_url: url=https://github.com/OpenTSDB/opentsdb/releases/download/v2.1.0/opentsdb-2.1.0.noarch.rpm dest=/usr/local/src/opentsdb-2.1.0.noarch.rpm
+  tags: opentsdb
+
+- name: install gnuplot
+  yum: name={{ item }} state=latest
+  with_items:
+    - gnuplot
+  tags: opentsdb
+
+- name: rpm install 
+  shell: rpm -ivh /usr/local/src/opentsdb-2.1.0.noarch.rpm
+  tags: opentsdb

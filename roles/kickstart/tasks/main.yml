@@ -1,0 +1,53 @@
+---
+- name: yum install tftp server
+  yum: name={{ item }} state=latest
+  with_items:
+    - tftp-server
+    - syslinux
+  tags: tftp
+
+- name: restart xinetd service
+  service: name={{ item }} state=restarted enabled=yes
+  with_items:
+    - xinetd
+  tags: tftp
+
+- name: configure tftp
+  template: src=tftp dest=/etc/xinetd.d/tftp
+  tags: tftp
+
+- name: mkdir pxeboot directory
+  file: path=/var/lib/tftpboot/pxeboot state=directory
+  tags: tftp
+
+- name: copy pxelinux.o tp pxeboot
+  command: cp /usr/share/syslinux/pxelinux.0 /var/lib/tftpboot/pxeboot
+  tags: tftp
+
+- name: mkidr centos6 image mount directory
+  file: path=/var/www/html/centos6 state=directory mode=755
+  tags: tftp
+
+- name: mount centos6 iso to /var/www/html/centos6
+  command: mount -t iso9660 -o loop /root/CentOS-6.6-x86_64-bin-DVD1.iso /var/www/html/centos6
+  tags: tftp
+
+- name: copy vmlinuz file to pxeboot
+  command: cp /var/www/html/centos6/images/pxeboot/vmlinuz /var/lib/tftpboot/pxeboot/
+  tags: tftp
+
+- name: copy vmlinuz file to pxeboot
+  command: cp /var/www/html/centos6/images/pxeboot/initrd.img /var/lib/tftpboot/pxeboot/
+  tags: tftp
+
+- name: mkdir pxelinux.cfg
+  file: path=/var/lib/tftpboot/pxeboot/pxelinux.cfg state=directory
+  tags: tftp
+
+- name: configure boot file
+  template: src=01-mac dest=/var/lib/tftpboot/pxeboot/pxelinux.cfg/01-mac
+  tags: tftp
+
+- name: configure kickstart file
+  template: src=host.cfg dest=/var/www/html/host.cfg
+  tags: tftp

@@ -1,0 +1,47 @@
+#!/bin/bash
+# chkconfig: - 99 02
+# processname: jupyterd
+
+NAME=jupyterd
+USER=dsl
+SCRIPTNAME=/etc/init.d/$NAME
+pidfile=/var/run/${NAME}.pid
+PROFILE=pyspark
+
+# Source function library.
+. /etc/init.d/functions
+
+# Check if requirements are met
+[ -x /usr/local/bin/ipython ] || exit 1
+
+case "$1" in
+  start)
+    $SCRIPTNAME status >/dev/null 2>&1 && echo "${NAME} is already running." && exit 1
+    su - $USER -c "~/.ipython/start_notebook_pyspark.sh"
+    sleep 3
+    PID=`ps aux |grep "profile=${PROFILE}" |awk '/\/usr\/local\/bin\/ipython notebook/ {print $2}'`
+    echo $PID > $pidfile
+    echo "${NAME} is running. PID:$PID"
+    ;;
+  stop)
+    $SCRIPTNAME status >/dev/null 2>&1 || echo "${NAME} is NOT running." || exit 1
+    [ -f $pidfile ] && cat $pidfile | xargs kill -s SIGKILL && rm $pidfile && echo "${NAME} is stopped."
+    ;;
+  restart)
+    $SCRIPTNAME stop
+    sleep 1
+    $SCRIPTNAME start
+    ;;
+  status)
+    if [ -f $pidfile ]; then
+      echo "${NAME} is running."; exit 0
+    else
+      echo "${NAME} is NOT running."; exit 1
+    fi
+    ;;
+  *)
+    echo "Usage: $SCRIPTNAME {start|stop|status|restart}" >&2
+    exit 3
+    ;;
+esac
+

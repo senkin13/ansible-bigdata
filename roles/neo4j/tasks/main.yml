@@ -1,0 +1,45 @@
+---
+# file: roles/neo4j/tasks/main.yml
+
+- name: get neo4j unix package
+  get_url: url=http://neo4j.com/artifact.php?name=neo4j-community-2.3.1-unix.tar.gz dest=/usr/local/src/
+  tags: neo4j
+
+- name: decompress
+  command: tar -zxvf /usr/local/src/neo4j-community-2.3.1-unix.tar.gz -C /opt/
+  tags: neo4j
+
+- name: create neo4j sympolic link
+  command: ln -fs /opt/neo4j-community-2.3.1 /opt/neo4j
+  tags: neo4j
+
+- name: get neo4j shell tools package
+  get_url: url=http://dist.neo4j.org/jexp/shell/neo4j-shell-tools_2.2.zip dest=/opt/neo4j/
+  tags: neo4j
+
+- name : install neo4j shell tools
+  shell:
+    unzip neo4j-shell-tools_2.2.zip -d lib-tmp && rsync -av lib-tmp/* lib/ && rm -rf neo4j-shell-tools_2.2.zip lib-tmp
+    chdir=/opt/neo4j
+  tags: neo4j
+
+- name: upload Rneo4j installation file 
+  template: src=Rneo4j.R dest=/opt/neo4j/conf
+  tags: neo4j
+
+- name: install Rneo4j
+  shell:
+    /usr/bin/Rscript Rneo4j.R
+    chdir=/opt/neo4j/conf
+  tags: neo4j
+
+- name: pip install python connector
+  pip: name={{ item }} state=latest
+  with_items:
+    - py2neo
+  tags: neo4j
+
+- name: edit neo4j-server.properties
+  template: src=neo4j-server.properties dest=/opt/neo4j/conf
+  tags: neo4j
+ 

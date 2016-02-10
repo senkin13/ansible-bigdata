@@ -1,0 +1,11 @@
+---
+# file: roles/fluentd/tasks/main.yml
+
+- name: install plugins
+  gem: name={{ item }} state=latest
+  with_items:
+    - fluentd
+    - fluent-plugin-tail-ex
+    - fluent-plugin-webhdfs
+    - fluent-plugin-elasticsearch
+  tags: fluentd

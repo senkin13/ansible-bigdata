@@ -1,0 +1,8 @@
+---
+- name: install requirements
+  pip: name={{ item }} state=latest
+  with_items: 
+    - impyla
+    - mistune
+    - pygments
+  tags: impyla

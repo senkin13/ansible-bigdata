@@ -1,0 +1,37 @@
+---
+# file: roles/zabbix-agent/tasks/main.yml
+
+- name: download epel repo for zabbix
+  copy: src=/usr/local/src/zabbix-release-2.4-1.el6.noarch.rpm dest=/usr/local/src/zabbix-release-2.4-1.el6.noarch.rpm
+  tags: zabbix-agent
+  ignore_errors: True
+
+- name: Check if path exists
+  stat: path=/usr/local/src/zabbix-release-2.4-1.el6.noarch.rpm
+  register: check_epel
+  tags: zabbix-agent
+  ignore_errors: True
+
+- name: install epel repo for zabbix
+  command: rpm -ivh /usr/local/src/zabbix-release-2.4-1.el6.noarch.rpm
+  tags: zabbix-agent
+  ignore_errors: True
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - zabbix-agent
+  ignore_errors: True
+  tags: zabbix-agent
+
+- name: configure file
+  template: src=zabbix_agentd.conf dest=/etc/zabbix/zabbix_agentd.conf
+  tags: zabbix-agent  
+  ignore_errors: True
+
+- name: start some service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - zabbix-agent
+  tags: zabbix-agent
+  ignore_errors: True
