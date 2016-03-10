@@ -1,0 +1,9 @@
+---
+# file: roles/R/tasks/main.yml
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - R 
+  ignore_errors: True 
+  tags: r

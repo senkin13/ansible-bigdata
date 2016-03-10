@@ -1,0 +1,10 @@
+---
+# file: roles/cuda/tasks/main.yml
+
+- name: get cuda resource
+  get_url: url=http://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-repo-rhel7-7.5-18.x86_64.rpm dest=/usr/local/src/
+  tags: cuda
+
+- name: install cuda
+  command: rpm -ivh /usr/local/src/cuda-repo-rhel7-7.5-18.x86_64.rpm && yum clean all && yum -y install cuda
+  tags: cuda

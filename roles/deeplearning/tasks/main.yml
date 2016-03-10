@@ -1,0 +1,23 @@
+---
+# file: roles/deeplearning/tasks/main.yml
+
+- name: yum install packages
+  yum: name={{ item }} state=latest
+  with_items:
+     - python-devel
+     - freetype-devel
+     - libpng-devel
+     - libjpeg-devel
+     - atlas-devel
+     - lapack-devel
+     - blas-devel
+  tags: deeplearning
+
+- name: pip install packages
+  pip: name={{ item }} state=latest
+  with_items:
+    - chainer
+    - scikit-image
+    - Pillow
+    - pandas
+  tags: deeplearning 

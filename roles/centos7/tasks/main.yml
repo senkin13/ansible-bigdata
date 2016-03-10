@@ -147,7 +147,6 @@
 - name: yum install packages
   yum: name={{ item }} state=latest
   with_items:
-    - nscd
     - monit
     - dstat
     - net-snmp
@@ -163,7 +162,6 @@
     - ntpd
     - monit
     - snmpd
-    - nscd
   ignore_errors: True
   tags: base
 
