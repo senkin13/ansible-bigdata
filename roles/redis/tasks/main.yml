@@ -1,0 +1,20 @@
+---
+- name: get cm repository
+  get_url: url=http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo dest=/etc/yum.repos.d/cloudera-manager.repo
+  tags: clouderamanager
+
+- name: yum install cm packages
+  yum: name={{ item }} state=latest
+  with_items:
+    - cloudera-manager-daemons
+    - cloudera-manager-server
+  tags: clouderamanager
+
+#- name: setup clouderamanager database to mysql
+#  command: /usr/share/cmf/schema/scm_prepare_database.sh mysql -h localhost -u root -ppassword --scm-host localhost cm cm password 
+
+- name: start some service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - cloudera-scm-server
+  tags: clouderamanager
