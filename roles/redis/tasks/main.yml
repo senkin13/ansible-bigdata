@@ -1,7 +1,7 @@
 --
 
 - name: setup clouderamanager database to mysql
-  command: rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  shell: rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
   && rpm -ivh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
   && yum --enablerepo=remi,remi-test,epel install redis
 
