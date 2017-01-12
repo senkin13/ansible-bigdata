@@ -1,8 +1,8 @@
 ---
 # file: roles/python2.7/tasks/main.yml
 
-- name: get python2.7.9 resource
-  get_url: url=https://www.python.org/ftp/python/2.7.9/Python-2.7.9.tgz dest=/usr/local/src/
+- name: get python2.7.13 resource
+  get_url: url=https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz dest=/usr/local/src/
   tags: python2.7
 
 - name: decompress
